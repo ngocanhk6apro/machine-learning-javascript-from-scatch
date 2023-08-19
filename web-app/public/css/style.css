@@ -1,0 +1,18 @@
+#canvas {
+    background-color: white;
+    box-shadow: 0 0 10px 2px black;
+}
+
+body {
+    font-family: Arial, serif;
+    background-color: skyblue;
+    overscroll-behavior: none;
+}
+
+.content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
