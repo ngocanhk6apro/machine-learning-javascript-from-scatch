@@ -3,6 +3,7 @@ class SketchPad {
     #ctx;
     #isDrawing = false;
     #canvas;
+    #drawFinishedListeners = [];
 
     constructor(container, size=400) {
         const canvas = document.createElement("canvas");
@@ -13,6 +14,18 @@ class SketchPad {
         this.#addEventListeners(canvas);
         this.#ctx = canvas.getContext("2d");
         this.#canvas = canvas;
+    }
+
+    addDrawFinishListener(listener) {
+        if (typeof listener === "function") {
+            this.#drawFinishedListeners.push(listener);
+        } else {
+            console.log("Wrong value for listener.")
+        }
+    }
+
+    get hasPaths() {
+        return this.#paths.length > 0;
     }
 
     #addEventListeners(canvas) {
@@ -42,7 +55,7 @@ class SketchPad {
 
     undo() {
         this.#paths.pop();
-        this.#redraw()
+        this.#redraw();
     }
 
     #redraw() {
@@ -50,9 +63,22 @@ class SketchPad {
         this.#draw()
     }
 
+    reset() {
+        this.#paths = [];
+        this.#redraw();
+    }
+
+    get paths() {
+        return this.#paths;
+    }
+
     #draw() {
         for(let idx = 0; idx <this.#paths.length; idx++) {
             this.#drawPath(this.#paths[idx])
+        }
+
+        for(let listener of this.#drawFinishedListeners) {
+            listener(this.#paths.length > 0)
         }
     }
 

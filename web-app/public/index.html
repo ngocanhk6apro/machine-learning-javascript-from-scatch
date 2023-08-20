@@ -10,11 +10,126 @@
 <body>
     <div class="content">
         <h1>Content Creator</h1>
-        <div id="sketchPadContainer"></div>
+        <div id="studentInfoPanel">
+            <label>
+                <input type="text" id="inputName" placeholder="Enter your name">
+            </label>
+            <button id="btnStart">START</button>
+        </div>
+        <div id="navigationCategory" style="visibility: hidden">
+            <label id="lbCategory"></label>
+            <button id="btnNext">NEXT</button>
+        </div>
+        <div id="sketchPadContainer" style="visibility: hidden;">
+        </div>
+        <div class="btn-group">
+            <button id="btnUndo" class="btn" disabled style="visibility:hidden;">Undo</button>
+        </div>
     </div>
     <script>
+        const registerUser = {
+            name: null,
+            session: null,
+            paths: []
+        };
+
+        const categories = [
+            "fish", "car",
+            "bicycle", "guitar",
+            "pencil"
+        ];
+        const
+            [
+                sketchPadContainer,
+                btnStart,
+                btnUndo,
+                inputName,
+                studentInfoPanel,
+                navigationCategory,
+                lbCategory,
+                btnNext
+            ] =
+            [
+                "#sketchPadContainer",
+                "#btnStart",
+                "#btnUndo",
+                "#inputName",
+                "#studentInfoPanel",
+                "#navigationCategory",
+                "#lbCategory",
+                "#btnNext"
+            ].map(it => document.querySelector(it));
+
         const sketchPad = new SketchPad(sketchPadContainer);
-        window.sketchPad = sketchPad;
+        sketchPad.addDrawFinishListener((hasPaths) => {
+            if (!hasPaths) {
+                btnUndo.setAttribute("disabled", "disabled");
+            } else {
+                btnUndo.removeAttribute("disabled");
+            }
+        });
+
+        btnUndo.addEventListener("click", () => sketchPad.undo());
+        btnStart.addEventListener("click", () => {
+            const userName = inputName.value.trim();
+            if(userName === "") {
+                alert("Enter your username first.");
+                return;
+            }
+            registerUser.name = userName;
+            registerUser.session = new Date().getTime();
+
+            studentInfoPanel.style.visibility = "hidden";
+            sketchPadContainer.style.visibility = "visible";
+            btnUndo.style.visibility = "visible";
+
+            lbCategory.textContent = `Please draw ${categories[categoryIndex]}`;
+            navigationCategory.style.visibility = "visible";
+        });
+
+        let categoryIndex = 0;
+        btnNext.addEventListener("click", (evt) => {
+            const title = evt.target.textContent;
+            if (title === "SAVE") {
+                save();
+                return;
+            }
+
+            if (!sketchPad.hasPaths) {
+                alert("Please draw something.");
+                return;
+            }
+
+            const currentCategory = categories[categoryIndex];
+            categoryIndex++;
+            if (categoryIndex === categories.length) {
+                evt.target.textContent = "SAVE";
+                lbCategory.textContent = "Thank you.";
+                sketchPadContainer.style.visibility = "hidden";
+                btnUndo.style.visibility = "hidden";
+                return;
+            }
+            lbCategory.textContent = `Please draw ${categories[categoryIndex]}`;
+            registerUser.paths.push({
+                [currentCategory]: sketchPad.paths
+            });
+            sketchPad.reset();
+        });
+
+        function save() {
+            btnNext.style.visibility = "hidden";
+            lbCategory.textContent = "Take your download file for the training process."
+
+            const aTag = Object.assign(document.createElement("a"), {
+                download : `${registerUser.session}.json`,
+                style: "display:none;",
+                href: `data:text/plain;charset=utf-8,${encodeURIComponent(JSON.stringify(registerUser, null, 2))}`
+            });
+
+            document.body.append(aTag);
+            aTag.click();
+            aTag.remove();
+        }
     </script>
 </body>
 </html>
