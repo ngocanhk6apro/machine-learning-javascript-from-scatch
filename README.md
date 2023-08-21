@@ -17,9 +17,9 @@ Create app to draw shape follow the category then save as json file with structu
 }
 ```
 With filename is session_id.json ex: 1692504187543.json
-After collecting bunch of these json file we jump to processing data step.
+After collecting a bunch of these json file we jump to processing data step.
 
-### 2. Process data
+### 2. Process data (data-generator.js)
 When we have all raw data (*.json) file now we will process them.\
  #### 2.1 Generate sample.json file which contains flat version of all object follow by user sequentially
  ```javascript
