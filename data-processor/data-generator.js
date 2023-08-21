@@ -5,6 +5,7 @@ const { createCanvas } = require("canvas");
 const {showProgress} = require("./progress-reporter");
 const canvas = createCanvas(400, 400);
 const ctx = canvas.getContext("2d");
+const cliProgress = require('cli-progress');
 
 if (!fs.existsSync(dataSetPath)) {
     fs.mkdirSync(dataSetPath);
@@ -76,13 +77,17 @@ function generateImageFiles() {
     }
 
     let id = 1;
+    const progressBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
+    progressBar.start(total, id);
     files.map(file => JSON.parse(fs.readFileSync(path.join(rawDataPath, file))))
         .forEach(({drawings}) => {
             for(let label in drawings) {
                 const image = drawImage(drawings[label]);
                 fs.writeFileSync(path.join(imageDataSetPath, `${id++}.png`), image);
-                showProgress(id, total);
+                //showProgress(id, total);
+                progressBar.update(id);
             }
         });
+    progressBar.stop();
 }
 generateImageFiles();
