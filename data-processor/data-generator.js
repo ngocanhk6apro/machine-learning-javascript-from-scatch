@@ -2,6 +2,7 @@ const fs = require("fs");
 const {rawDataPath, dataPath, jsonDataSetPath, imageDataSetPath, dataSetPath} = require("./constants");
 const path = require("path");
 const { createCanvas } = require("canvas");
+const {showProgress} = require("./progress-reporter");
 const canvas = createCanvas(400, 400);
 const ctx = canvas.getContext("2d");
 
@@ -10,6 +11,7 @@ if (!fs.existsSync(dataSetPath)) {
 }
 
 const files = fs.readdirSync(rawDataPath);
+const total = files.length * 8;
 
 function generateSampleFile() {
     let id = 1;
@@ -23,7 +25,7 @@ function generateSampleFile() {
 
     fs.writeFileSync(path.join(dataPath, "sample.json"), JSON.stringify(mergedFiles, null, 3));
 }
-generateSampleFile();
+//generateSampleFile();
 
 function generateJsonDataSet() {
     if (!fs.existsSync(jsonDataSetPath)) {
@@ -35,6 +37,7 @@ function generateJsonDataSet() {
         .forEach(({drawings}) => {
             for(let label in drawings) {
                 fs.writeFileSync(path.join(jsonDataSetPath, `${id++}.json`), JSON.stringify(drawings[label], null, 3));
+                showProgress(id, total);
             }
         });
     console.log("ok");
@@ -78,7 +81,8 @@ function generateImageFiles() {
             for(let label in drawings) {
                 const image = drawImage(drawings[label]);
                 fs.writeFileSync(path.join(imageDataSetPath, `${id++}.png`), image);
+                showProgress(id, total);
             }
         });
 }
-//generateImageFiles();
+generateImageFiles();
