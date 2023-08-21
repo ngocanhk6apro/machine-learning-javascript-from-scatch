@@ -11,6 +11,10 @@ class Constants {
         return path.join(this.#baseDirectory);
     }
 
+    static get dataSetPath() {
+        return path.join(this.#baseDirectory, "dataset");
+    }
+
     static get jsonDataSetPath() {
         return path.join(this.#baseDirectory, "dataset", "json");
     }

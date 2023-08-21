@@ -83,8 +83,8 @@ class SketchPad {
     }
 
     #drawPath(path=[]) {
-        this.#ctx.strokeStyle="brown";
-        this.#ctx.lineWidth = 2;
+        this.#ctx.strokeStyle="black";
+        this.#ctx.lineWidth = 3;
         this.#ctx.beginPath();
         this.#ctx.moveTo(...path[0]);
         for (let idx=1; idx < path.length; idx++) {

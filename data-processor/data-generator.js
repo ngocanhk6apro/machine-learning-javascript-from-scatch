@@ -1,8 +1,13 @@
 const fs = require("fs");
-const {rawDataPath, dataPath, jsonDataSetPath} = require("./constants");
-const path = require("path")
+const {rawDataPath, dataPath, jsonDataSetPath, imageDataSetPath, dataSetPath} = require("./constants");
+const path = require("path");
+const { createCanvas } = require("canvas");
+const canvas = createCanvas(400, 400);
+const ctx = canvas.getContext("2d");
 
-
+if (!fs.existsSync(dataSetPath)) {
+    fs.mkdirSync(dataSetPath);
+}
 
 const files = fs.readdirSync(rawDataPath);
 
@@ -18,9 +23,13 @@ function generateSampleFile() {
 
     fs.writeFileSync(path.join(dataPath, "sample.json"), JSON.stringify(mergedFiles, null, 3));
 }
-//generateSampleFile();
+generateSampleFile();
 
 function generateJsonDataSet() {
+    if (!fs.existsSync(jsonDataSetPath)) {
+        fs.mkdirSync(jsonDataSetPath);
+    }
+
     let id = 1;
     files.map(file => JSON.parse(fs.readFileSync(path.join(rawDataPath, file))))
         .forEach(({drawings}) => {
@@ -32,6 +41,44 @@ function generateJsonDataSet() {
 }
 //generateJsonDataSet();
 
-function generateImageFiles() {
-    
+function drawImage(paths = []) {
+    for(let idx = 0; idx < paths.length; idx++) {
+        drawPath(paths[idx])
+    }
+    const buffer = canvas.toBuffer("image/png");
+    clearCanvas();
+    return buffer;
 }
+
+function clearCanvas() {
+    ctx.clearRect(0, 0, 400, 400);
+}
+
+function drawPath(path = []) {
+    ctx.strokeStyle="black";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(...path[0]);
+    for (let idx=1; idx < path.length; idx++) {
+        ctx.lineTo(...path[idx]);
+    }
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.stroke();
+}
+
+function generateImageFiles() {
+    if (!fs.existsSync(imageDataSetPath)) {
+        fs.mkdirSync(imageDataSetPath);
+    }
+
+    let id = 1;
+    files.map(file => JSON.parse(fs.readFileSync(path.join(rawDataPath, file))))
+        .forEach(({drawings}) => {
+            for(let label in drawings) {
+                const image = drawImage(drawings[label]);
+                fs.writeFileSync(path.join(imageDataSetPath, `${id++}.png`), image);
+            }
+        });
+}
+//generateImageFiles();
