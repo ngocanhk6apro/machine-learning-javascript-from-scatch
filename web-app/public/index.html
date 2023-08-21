@@ -28,9 +28,9 @@
     </div>
     <script>
         const registerUser = {
-            name: null,
+            student: null,
             session: null,
-            paths: []
+            drawings: {}
         };
 
         const categories = [
@@ -76,7 +76,7 @@
                 alert("Enter your username first.");
                 return;
             }
-            registerUser.name = userName;
+            registerUser.student = userName;
             registerUser.session = new Date().getTime();
 
             studentInfoPanel.style.visibility = "hidden";
@@ -110,9 +110,7 @@
                 return;
             }
             lbCategory.textContent = `Please draw ${categories[categoryIndex]}`;
-            registerUser.paths.push({
-                [currentCategory]: sketchPad.paths
-            });
+            registerUser.drawings[currentCategory] =sketchPad.paths
             sketchPad.reset();
         });
 
