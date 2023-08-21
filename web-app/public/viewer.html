@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Train data viewer</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        table > tbody >tr> td>div>img {
+            object-fit: contain;
+            width: 5vw;
+            height: auto;
+        }
+
+        table > tbody >tr> td:nth-child(1) {
+            text-align: center;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        table, td, th {
+            border-collapse: collapse;
+            border: 1px solid #bfbfbf;
+        }
+
+        table > thead > tr {
+            border-bottom: 1px solid #bfbfbf;
+        }
+    </style>
+</head>
+<body>
+    <table>
+        <thead>
+            <tr>
+                <th>Student Name</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            <!---Content will be generated in runtime-->
+        </tbody>
+    </table>
+<script>
+    (async function() {
+        const response = await fetch("/sample-json");
+        const records = await response.json();
+        const tableBody = document.getElementById("tableBody");
+        const LIMIT_RANGE = 8;
+        let testCount = 1;
+        let idx = 1;
+        let tr = undefined;
+        for(let record of records) {
+            if (idx === 1) {
+                tr = Object.assign(document.createElement("tr"), {});
+                tr.appendChild(Object.assign(document.createElement("td"), {textContent: record.student_name}));
+            }
+            tr.appendChild(createTd(record));
+            idx++;
+            if (idx > LIMIT_RANGE) {
+                tableBody.appendChild(tr);
+                idx = 1;
+                testCount ++;
+                // if (testCount === 10) {
+                //     break;
+                // }
+            }
+        }
+    })();
+
+    function createTd(record) {
+        const td = document.createElement("td");
+        const divTag = document.createElement("div");
+        td.appendChild(divTag);
+        divTag.appendChild(Object.assign(document.createElement("span"), { textContent: record.label }));
+        divTag.appendChild(Object.assign(document.createElement("img"), { src: `/image/${record.id}.png` }));
+        return td;
+    }
+</script>
+</body>
+</html>

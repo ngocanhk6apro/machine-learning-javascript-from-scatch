@@ -2,11 +2,11 @@ const express = require("express");
 const fs = require("fs");
 const dotenv = require("dotenv");
 dotenv.config();
+const path = require("path");
 
 const app = express();
-app.use(express.static("public"));
+app.use(express.static(path.join(__dirname, "public")));
 
-const path = require("path");
 const parentDir = path.dirname(process.cwd());
 const sampleDataPath = path.join(parentDir, "data-processor", "data", "sample.json");
 if (!fs.existsSync(sampleDataPath)) {
@@ -20,7 +20,12 @@ const parentImagePath = path.join(parentDir, "data-processor", "data", "dataset"
 *
 * */
 app.get("/", (req, resp) => {
+    //resp.sendFile("index.html");
     resp.sendFile("index.html");
+});
+
+app.get("/viewer", (req, resp) => {
+    resp.sendFile("viewer.html", { root: path.join(__dirname, "public")});
 });
 
 app.get("/sample-json", (req, resp) => {
