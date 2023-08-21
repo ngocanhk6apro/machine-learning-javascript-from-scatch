@@ -1,3 +1,6 @@
 node_modules
 .idea
 data-processor/node_modules
+data-processor/data/dataset/json
+data-processor/data/dataset/image
+/data-processor/data/sample.json
