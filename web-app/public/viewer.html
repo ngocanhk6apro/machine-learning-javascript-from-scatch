@@ -13,6 +13,10 @@
             overscroll-behavior: none;
         }
 
+        table {
+            width: calc(100% - 500px);
+        }
+
         table > tbody >tr> td>div>img {
             object-fit: contain;
             width: 5vw;
@@ -112,7 +116,7 @@
             const { featureNames, samples, styles  } = features;
 
             const chartOptions = {
-                size: 600,
+                size: 500,
                 axesLabels: featureNames,
                 styles,
                 transparency: 0.7,
