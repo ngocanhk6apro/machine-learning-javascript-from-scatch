@@ -101,6 +101,41 @@ function generateImageFiles() {
 function extractFeatures() {
     console.log("START EXTRACT FEATURES...");
     let id = 1;
+    const styles = {
+        "car": {
+            "color": "gray",
+            "text": "🚕"
+        },
+        "fish": {
+            "color": "red",
+            "text": "🐠"
+        },
+        "house": {
+            "color": "yellow",
+            "text": "🏡"
+        },
+        "tree": {
+            "color": "green",
+            "text": "🌲"
+        },
+        "bicycle": {
+            "color": "cyan",
+            "text": "🚲"
+        },
+        "guitar": {
+            "color": "blue",
+            "text": "🎸"
+        },
+        "pencil": {
+            "color": "magenta",
+            "text": "✏"
+        },
+        "clock": {
+            "color": "lightgray",
+            "text": "⏰"
+        }
+    }
+
     const samples = files.map(file => getJSONFromFile(file))
         .flatMap(({drawings}) => Object.keys(drawings).map(drawingObjectName => ({
             id: id++,
@@ -110,13 +145,15 @@ function extractFeatures() {
                 drawings[drawingObjectName].map(it => it.length).reduce((x, y) => x+y, 0)
             ]
         })));
+
     fs.writeFileSync(path.join(dataPath, "features.json"), JSON.stringify({
         featureNames: [
             "Path Count",
             "Point Count"
         ],
-        samples
+        samples,
+        styles
     }, null, 3));
     console.log("FINISHED!!")
 }
-//extractFeatures();
+extractFeatures();

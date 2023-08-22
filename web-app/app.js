@@ -22,8 +22,8 @@ const parentImagePath = path.join(parentDir, "data-processor", "data", "dataset"
 *
 * */
 app.get("/", (req, resp) => {
-    //resp.sendFile("index.html");
-    resp.sendFile("index.html");
+    //resp.sendFile("creator.html");
+    resp.sendFile("creator.html", { root: path.join(__dirname, "public")});
 });
 
 app.get("/viewer", (req, resp) => {

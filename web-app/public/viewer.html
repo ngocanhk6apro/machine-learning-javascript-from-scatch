@@ -8,9 +8,6 @@
     <title>Train data viewer</title>
     <style>
         body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
             font-family: Arial, serif;
             background-color: skyblue;
             overscroll-behavior: none;
@@ -38,14 +35,23 @@
             border-bottom: 1px solid #bfbfbf;
         }
 
-        .cell-object:hover {
-            background: cornsilk;
+        #chartContainer {
+            position: fixed;
+            top: 50%;
+            right: 0;
+            transform: translate(0, -50%);
+        }
+
+        .emphasize {
+            background-color: coral;
         }
     </style>
 </head>
 <body>
-    <table>
-        <thead>
+    <div id="chartContainer"></div>
+    <div class="sampleContainer">
+        <table>
+            <thead>
             <tr>
                 <th>Student Name</th>
                 <th></th>
@@ -57,42 +63,90 @@
                 <th></th>
                 <th></th>
             </tr>
-        </thead>
-        <tbody id="tableBody">
+            </thead>
+            <tbody id="tableBody">
             <!---Content will be generated in runtime-->
-        </tbody>
-    </table>
-<script>
-    (async function() {
-        const response = await fetch("/sample-json");
-        const records = await response.json();
-        const tableBody = document.getElementById("tableBody");
-        const LIMIT_RANGE = 8;
-        let idx = 1;
-        let tr = undefined;
-        for(let record of records) {
-            if (idx === 1) {
-                tr = Object.assign(document.createElement("tr"), {});
-                tr.appendChild(Object.assign(document.createElement("td"), {textContent: record.student_name}));
-            }
-            tr.appendChild(createTd(record));
-            idx++;
-            if (idx > LIMIT_RANGE) {
-                tableBody.appendChild(tr);
-                idx = 1;
-            }
-        }
-    })();
+            </tbody>
+        </table>
+    </div>
+    <script src="js/graphics.js"></script>
+    <script src="js/math.js"></script>
+    <script src="js/chart.js"></script>
 
-    function createTd(record) {
-        const td = document.createElement("td");
-        const divTag = Object.assign(document.createElement("div"), {id: `object_${record.id}`});
-        divTag.classList.add("cell-object");
-        td.appendChild(divTag);
-        divTag.appendChild(Object.assign(document.createElement("span"), { textContent: record.label }));
-        divTag.appendChild(Object.assign(document.createElement("img"), { src: `/image/${record.id}.png` }));
-        return td;
-    }
-</script>
+    <!---Logic to fetch sample data image and display on the UI--->
+    <script>
+        (async function() {
+            const sampleResponse = await fetch("/sample-json");
+            const records = await sampleResponse.json();
+            const tableBody = document.getElementById("tableBody");
+            const LIMIT_RANGE = 8;
+            let idx = 1;
+            let tr = undefined;
+            for(let record of records) {
+                if (idx === 1) {
+                    tr = Object.assign(document.createElement("tr"), {});
+                    tr.appendChild(Object.assign(document.createElement("td"), {textContent: record.student_name}));
+                }
+                tr.appendChild(createTd(record));
+                idx++;
+                if (idx > LIMIT_RANGE) {
+                    tableBody.appendChild(tr);
+                    idx = 1;
+                }
+            }
+
+            function createTd(record) {
+                const td = document.createElement("td");
+                const divTag = Object.assign(document.createElement("div"), {id: `object_${record.id}`});
+                divTag.classList.add("cell-object");
+                td.appendChild(divTag);
+                divTag.appendChild(Object.assign(document.createElement("span"), { textContent: record.label }));
+                divTag.appendChild(Object.assign(document.createElement("img"), { src: `/image/${record.id}.png` }));
+                td.addEventListener("click", () => onChartIconSelected(record, false));
+                return td;
+            }
+
+            //Logic to draw a scatter diagram
+            const featuresResponse = await fetch("/features-json");
+            const features = await featuresResponse.json();
+            const { featureNames, samples, styles  } = features;
+
+            const chartOptions = {
+                size: 600,
+                axesLabels: featureNames,
+                styles,
+                transparency: 0.7,
+                icon: "image"
+            };
+
+            graphics.generateImages(styles);
+
+            const chartContainer = document.getElementById("chartContainer");
+            const chart = new Chart(chartContainer, samples, chartOptions, onChartIconSelected);
+
+            function onChartIconSelected(sample, doScroll = true) {
+                if (!Boolean(sample)) {
+                    [...document.querySelectorAll(".emphasize")].forEach(it => it.classList.remove("emphasize"));
+                    return;
+                }
+
+                [...document.querySelectorAll(".emphasize")].forEach(it => it.classList.remove("emphasize"));
+                const tableCellTarget = document.getElementById(`object_${sample.id}`);
+                tableCellTarget.classList.add("emphasize");
+                if (doScroll) {
+                    tableCellTarget.scrollIntoView({
+                        behavior: "auto",
+                        block: "center"
+                    });
+                }
+
+                if (!Boolean(sample.point)) {
+                    const findSample = samples.find(it => it.id === sample.id);
+                    sample.point = findSample.point;
+                }
+                chart.selectSample(sample);
+            }
+        })();
+    </script>
 </body>
 </html>
