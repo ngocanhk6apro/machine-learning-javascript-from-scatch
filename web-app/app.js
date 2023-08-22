@@ -9,7 +9,9 @@ app.use(express.static(path.join(__dirname, "public")));
 
 const parentDir = path.dirname(process.cwd());
 const sampleDataPath = path.join(parentDir, "data-processor", "data", "sample.json");
-if (!fs.existsSync(sampleDataPath)) {
+const featuresDataPath = path.join(parentDir, "data-processor", "data", "features.json");
+
+if (!fs.existsSync(sampleDataPath) || !fs.existsSync(featuresDataPath)) {
     throw "You should run data processor first";
 }
 
@@ -31,6 +33,11 @@ app.get("/viewer", (req, resp) => {
 app.get("/sample-json", (req, resp) => {
     resp.json(JSON.parse(fs.readFileSync(sampleDataPath).toString()));
 });
+
+app.get("/features-json", (req, resp) => {
+    resp.json(JSON.parse(fs.readFileSync(featuresDataPath).toString()));
+});
+
 
 app.get("/image/:name", (req, resp) => {
     resp.sendFile(path.join(parentImagePath, req.params.name));

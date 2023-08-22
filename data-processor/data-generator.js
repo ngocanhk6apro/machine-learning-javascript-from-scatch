@@ -101,13 +101,22 @@ function generateImageFiles() {
 function extractFeatures() {
     console.log("START EXTRACT FEATURES...");
     let id = 1;
-    const features = files.map(file => getJSONFromFile(file))
+    const samples = files.map(file => getJSONFromFile(file))
         .flatMap(({drawings}) => Object.keys(drawings).map(drawingObjectName => ({
             id: id++,
-            pathCount: drawings[drawingObjectName].length,
-            pointCount: drawings[drawingObjectName].map(it => it.length).reduce((x, y) => x+y, 0)
+            label: drawingObjectName,
+            point: [
+                drawings[drawingObjectName].length,
+                drawings[drawingObjectName].map(it => it.length).reduce((x, y) => x+y, 0)
+            ]
         })));
-    fs.writeFileSync(path.join(dataPath, "feature.json"), JSON.stringify(features, null, 3));
+    fs.writeFileSync(path.join(dataPath, "features.json"), JSON.stringify({
+        featureNames: [
+            "Path Count",
+            "Point Count"
+        ],
+        samples
+    }, null, 3));
     console.log("FINISHED!!")
 }
 //extractFeatures();

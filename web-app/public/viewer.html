@@ -11,6 +11,9 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            font-family: Arial, serif;
+            background-color: skyblue;
+            overscroll-behavior: none;
         }
 
         table > tbody >tr> td>div>img {
@@ -28,10 +31,15 @@
         table, td, th {
             border-collapse: collapse;
             border: 1px solid #bfbfbf;
+            background-color:#fdfdfd;
         }
 
         table > thead > tr {
             border-bottom: 1px solid #bfbfbf;
+        }
+
+        .cell-object:hover {
+            background: cornsilk;
         }
     </style>
 </head>
@@ -79,6 +87,7 @@
     function createTd(record) {
         const td = document.createElement("td");
         const divTag = Object.assign(document.createElement("div"), {id: `object_${record.id}`});
+        divTag.classList.add("cell-object");
         td.appendChild(divTag);
         divTag.appendChild(Object.assign(document.createElement("span"), { textContent: record.label }));
         divTag.appendChild(Object.assign(document.createElement("img"), { src: `/image/${record.id}.png` }));
