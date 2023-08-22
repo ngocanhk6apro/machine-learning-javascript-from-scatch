@@ -1,11 +1,13 @@
 const fs = require("fs");
-const {rawDataPath, dataPath, jsonDataSetPath, imageDataSetPath, dataSetPath} = require("./constants");
 const path = require("path");
-const { createCanvas } = require("canvas");
+const cliProgress = require('cli-progress');
+
+const {rawDataPath, dataPath, jsonDataSetPath, imageDataSetPath, dataSetPath} = require("./constants");
 const {showProgress} = require("./progress-reporter");
+
+const { createCanvas } = require("canvas");
 const canvas = createCanvas(400, 400);
 const ctx = canvas.getContext("2d");
-const cliProgress = require('cli-progress');
 
 if (!fs.existsSync(dataSetPath)) {
     fs.mkdirSync(dataSetPath);
@@ -16,7 +18,7 @@ const total = files.length * 8;
 
 function generateSampleFile() {
     let id = 1;
-    const mergedFiles = files.map((file) => JSON.parse(fs.readFileSync(path.join(rawDataPath, file))))
+    const mergedFiles = files.map((file) => getJSONFromFile(file))
         .flatMap(({session, student, drawings}) => Object.keys(drawings).map(key => ({
             id: id++,
             label: key,
@@ -34,7 +36,7 @@ function generateJsonDataSet() {
     }
 
     let id = 1;
-    files.map(file => JSON.parse(fs.readFileSync(path.join(rawDataPath, file))))
+    files.map(file => getJSONFromFile(file))
         .forEach(({drawings}) => {
             for(let label in drawings) {
                 fs.writeFileSync(path.join(jsonDataSetPath, `${id++}.json`), JSON.stringify(drawings[label], null, 3));
@@ -71,6 +73,11 @@ function drawPath(path = []) {
     ctx.stroke();
 }
 
+function getJSONFromFile(filePath) {
+    const fileContent = fs.readFileSync(path.join(rawDataPath, filePath)).toString();
+    return JSON.parse(fileContent);
+}
+
 function generateImageFiles() {
     if (!fs.existsSync(imageDataSetPath)) {
         fs.mkdirSync(imageDataSetPath);
@@ -79,12 +86,11 @@ function generateImageFiles() {
     let id = 1;
     const progressBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
     progressBar.start(total, id);
-    files.map(file => JSON.parse(fs.readFileSync(path.join(rawDataPath, file))))
+    files.map(file => getJSONFromFile(file))
         .forEach(({drawings}) => {
             for(let label in drawings) {
                 const image = drawImage(drawings[label]);
                 fs.writeFileSync(path.join(imageDataSetPath, `${id++}.png`), image);
-                //showProgress(id, total);
                 progressBar.update(id);
             }
         });
@@ -95,7 +101,7 @@ function generateImageFiles() {
 function extractFeatures() {
     console.log("START EXTRACT FEATURES...");
     let id = 1;
-    const features = files.map(file => JSON.parse(fs.readFileSync(path.join(rawDataPath, file))))
+    const features = files.map(file => getJSONFromFile(file))
         .flatMap(({drawings}) => Object.keys(drawings).map(drawingObjectName => ({
             id: id++,
             pathCount: drawings[drawingObjectName].length,
@@ -104,4 +110,4 @@ function extractFeatures() {
     fs.writeFileSync(path.join(dataPath, "feature.json"), JSON.stringify(features, null, 3));
     console.log("FINISHED!!")
 }
-extractFeatures();
+//extractFeatures();

@@ -29,7 +29,7 @@ app.get("/viewer", (req, resp) => {
 });
 
 app.get("/sample-json", (req, resp) => {
-    resp.json(JSON.parse(fs.readFileSync(sampleDataPath)));
+    resp.json(JSON.parse(fs.readFileSync(sampleDataPath).toString()));
 });
 
 app.get("/image/:name", (req, resp) => {

@@ -1,8 +1,8 @@
 class SketchPad {
-    #paths = [];
     #ctx;
-    #isDrawing = false;
     #canvas;
+    #paths = [];
+    #isDrawing = false;
     #drawFinishedListeners = [];
 
     constructor(container, size=400) {
@@ -11,6 +11,7 @@ class SketchPad {
         canvas.height= size;
         canvas.setAttribute("id", "canvas");
         container.append(canvas);
+
         this.#addEventListeners(canvas);
         this.#ctx = canvas.getContext("2d");
         this.#canvas = canvas;
