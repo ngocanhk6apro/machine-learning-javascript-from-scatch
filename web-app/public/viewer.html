@@ -72,7 +72,7 @@
                 return td;
             }
 
-            //Logic to draw a scatter diagram
+            //Logic to draw a scatter Chart diagram
             const featuresResponse = await fetch("/features-json");
             const features = await featuresResponse.json();
             const { featureNames, samples, styles  } = features;
@@ -93,6 +93,8 @@
             // Init for the input container
             const inputContainer = document.getElementById("inputContainer");
             const sketchPath = new SketchPad(inputContainer);
+            sketchPath.showMaskAround();
+            sketchPath.addDrawingUpdateListener(onSketchPadDrawingUpdate);
 
             // Init for toggle input button
             const toggleInputButton = document.getElementById("btnToggleInput");
@@ -124,9 +126,19 @@
             function toggleInput() {
                 if (inputContainer.style.visibility === "hidden") {
                     inputContainer.style.visibility = "visible";
+                    onSketchPadDrawingUpdate(sketchPath.paths);
                 } else {
                     inputContainer.style.visibility = "hidden";
+                    chart.hideDynamicPoint();
                 }
+            }
+
+            function onSketchPadDrawingUpdate(paths) {
+                const point = [
+                    paths.length,
+                    paths.flatMap(it => [...it]).length
+                ];
+                chart.showDynamicPoint(point);
             }
         })();
     </script>

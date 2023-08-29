@@ -41,6 +41,16 @@ class Chart{
       this.#addEventListeners();
    }
 
+   showDynamicPoint(point) {
+      this.dynamicPoint = point;
+      this.#draw();
+   }
+
+   hideDynamicPoint() {
+      this.dynamicPoint = null;
+      this.#draw();
+   }
+
    #addEventListeners(){
       const {canvas,dataTrans,dragInfo}=this;
       canvas.onmousedown=(evt)=>{
@@ -228,6 +238,13 @@ class Chart{
          this.#emphasizeSample(
             this.selectedSample,"yellow"
          );
+      }
+
+      // Additional logic to draw dynamic point
+      if (this.dynamicPoint) {
+         const pixelLoc = math.remapPoint(this.dataBounds, this.pixelBounds, this.dynamicPoint);
+         graphics.drawPoint(ctx, pixelLoc, "rgba(255, 255, 255, 0.7)", 10_000_000);
+         graphics.drawPoint(ctx, pixelLoc, "black");
       }
 
       this.#drawAxes();

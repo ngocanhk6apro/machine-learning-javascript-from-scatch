@@ -66,4 +66,5 @@ table > thead > tr {
     position: fixed;
     right: 20%;
     top: 20%;
+    z-index: 1;
 }
