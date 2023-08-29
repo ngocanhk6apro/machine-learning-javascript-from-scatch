@@ -141,7 +141,13 @@ const PathUtils = Object.freeze({
     }
 });
 
-function extractPathCountAndPointCountFeatures() {
+const FeatureExtractTypes = Object.freeze({
+    PATHS_AND_POINTS_COUNT : 1,
+    WIDTH_AND_HEIGHT : 2
+});
+
+
+function extractFeatures(type) {
     console.log("START EXTRACT FEATURES...");
     let id = 1;
     const styles = {
@@ -179,24 +185,53 @@ function extractPathCountAndPointCountFeatures() {
         }
     }
 
+    let firstFeatureFunc = () => {};
+    let secondFeatureFunc = () => {};
+
+    let featureNames = [];
+
+    if (type === FeatureExtractTypes.PATHS_AND_POINTS_COUNT) {
+        firstFeatureFunc = PathUtils.getPathCount;
+        secondFeatureFunc = PathUtils.getPathCount;
+        featureNames = [
+            "Path Count",
+            "Point Count"
+        ];
+    } else if (type === FeatureExtractTypes.WIDTH_AND_HEIGHT) {
+        firstFeatureFunc = PathUtils.getWidth;
+        secondFeatureFunc = PathUtils.getHeight;
+        featureNames = [
+            "Width",
+            "Height"
+        ];
+    } else {
+        throw "Not found type to extract features";
+    }
+
     const samples = files.map(file => getJSONFromFile(file))
         .flatMap(({drawings}) => Object.keys(drawings).map(drawingObjectName => ({
             id: id++,
             label: drawingObjectName,
             point: [
-                PathUtils.getPathCount(drawings[drawingObjectName]),
-                PathUtils.getPointCount(drawings[drawingObjectName])
+                firstFeatureFunc(drawings[drawingObjectName]),
+                secondFeatureFunc(drawings[drawingObjectName])
             ]
         })));
 
     fs.writeFileSync(path.join(dataPath, "features.json"), JSON.stringify({
-        featureNames: [
-            "Path Count",
-            "Point Count"
-        ],
+        featureNames,
         samples,
         styles
     }, null, 3));
     console.log("FINISHED!!")
 }
-extractPathCountAndPointCountFeatures();
+
+function extractPathCountAndPointCountFeatures() {
+    extractFeatures(FeatureExtractTypes.PATHS_AND_POINTS_COUNT);
+}
+//extractPathCountAndPointCountFeatures();
+
+function extractWidthAndHeightFeatures() {
+    extractFeatures(FeatureExtractTypes.WIDTH_AND_HEIGHT);
+}
+extractWidthAndHeightFeatures();
