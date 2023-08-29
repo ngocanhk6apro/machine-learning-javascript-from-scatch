@@ -52,6 +52,7 @@ table > thead > tr {
     background-color: white;
     box-shadow: 0 0 10px 2px black;
     margin-top: 10px;
+    pointer-events: bounding-box;
 }
 
 .btn-group {

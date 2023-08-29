@@ -7,7 +7,7 @@ const childProcess = require("child_process");
 
 const app = express();
 app.use(express.static(path.join(__dirname, "public")));
-
+app.use(express.static(path.join(path.dirname(__dirname), "common-utils")));
 const parentDir = path.dirname(process.cwd());
 const sampleDataPath = path.join(parentDir, "data-processor", "data", "sample.json");
 const featuresDataPath = path.join(parentDir, "data-processor", "data", "features.json");

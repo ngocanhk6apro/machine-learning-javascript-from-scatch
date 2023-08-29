@@ -38,6 +38,7 @@
     <script src="js/math.js"></script>
     <script src="js/chart.js"></script>
     <script src="js/sketchpad.js"></script>
+    <script src="paths.js"></script>
 
     <!---Logic to fetch sample data image and display on the UI--->
     <script>
@@ -134,9 +135,16 @@
             }
 
             function onSketchPadDrawingUpdate(paths) {
+                // In case use features (path and point count)
+                // const point = [
+                //     PathUtils.getPathCount(paths),
+                //     PathUtils.getPointCount(paths)
+                // ];
+
+                // In case use features (width and height)
                 const point = [
-                    paths.length,
-                    paths.flatMap(it => [...it]).length
+                    PathUtils.getWidth(paths),
+                    PathUtils.getHeight(paths)
                 ];
                 chart.showDynamicPoint(point);
             }
