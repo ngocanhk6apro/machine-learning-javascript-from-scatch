@@ -120,7 +120,26 @@ function generateImageFiles() {
         });
     progressBar.stop();
 }
-generateImageFiles();
+//generateImageFiles();
+
+const PathUtils = Object.freeze({
+    getPathCount: (paths) => paths.length,
+    getPointCount : (paths) => paths.flatMap(it => [...it]).length,
+    getWidth : (paths) => {
+        const points = paths.flat();
+        const x = points.map(p => p[0]);
+        const min = Math.min(...x);
+        const max = Math.max(...x);
+        return max - min;
+    },
+    getHeight : (paths) => {
+        const points = paths.flat();
+        const y = points.map(p => p[1]);
+        const min = Math.min(...y);
+        const max = Math.max(...y);
+        return max - min;
+    }
+});
 
 function extractPathCountAndPointCountFeatures() {
     console.log("START EXTRACT FEATURES...");
@@ -165,8 +184,8 @@ function extractPathCountAndPointCountFeatures() {
             id: id++,
             label: drawingObjectName,
             point: [
-                drawings[drawingObjectName].length,
-                drawings[drawingObjectName].map(it => it.length).reduce((x, y) => x+y, 0)
+                PathUtils.getPathCount(drawings[drawingObjectName]),
+                PathUtils.getPointCount(drawings[drawingObjectName])
             ]
         })));
 
@@ -180,4 +199,4 @@ function extractPathCountAndPointCountFeatures() {
     }, null, 3));
     console.log("FINISHED!!")
 }
-//extractPathCountAndPointCountFeatures();
+extractPathCountAndPointCountFeatures();
