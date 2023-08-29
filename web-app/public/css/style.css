@@ -40,5 +40,9 @@ body {
     padding: 6px 10px;
 }
 
-.btn {
+.btn-group {
+    width: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

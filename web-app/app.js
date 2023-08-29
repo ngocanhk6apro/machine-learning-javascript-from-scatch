@@ -48,18 +48,18 @@ const PORT = process.env.PORT || 2023;
 
 let braveProcess = undefined;
 process.on("exit", () => {
-    braveProcess.close(0);
+    braveProcess.exit(0);
 });
 
 process.on('SIGINT', () => {
     console.log('Received SIGINT signal, shutting down...');
     // Perform cleanup tasks here
-    braveProcess.close(0);
+    braveProcess.exit(0);
     process.exit(0);
 });
 
 process.on("uncaughtException", () => {
-    braveProcess.close(0);
+    braveProcess.exit(0);
 });
 
 app.listen(PORT, (err) => {

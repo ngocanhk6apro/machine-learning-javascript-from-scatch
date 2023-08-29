@@ -1,0 +1,69 @@
+body {
+    font-family: Arial, serif;
+    background-color: skyblue;
+    overscroll-behavior: none;
+}
+
+table {
+    width: calc(100% - 500px);
+}
+
+table > tbody >tr> td>div>img {
+    object-fit: contain;
+    width: 5vw;
+    height: auto;
+}
+
+table > tbody >tr> td:nth-child(1) {
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+table, td, th {
+    border-collapse: collapse;
+    border: 1px solid #bfbfbf;
+    background-color:#fdfdfd;
+}
+
+table > thead > tr {
+    border-bottom: 1px solid #bfbfbf;
+}
+
+#chartContainer {
+    position: fixed;
+    top: 50%;
+    right: 0;
+    transform: translate(0, -50%);
+}
+
+#inputContainer {
+    position: fixed;
+    top: 50%;
+    right: 510px;
+    transform: translate(0, -50%);
+}
+
+.emphasize {
+    background-color: coral;
+}
+
+#canvas {
+    background-color: white;
+    box-shadow: 0 0 10px 2px black;
+    margin-top: 10px;
+}
+
+.btn-group {
+    width: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#controlPanel {
+    border: 1px solid #bfbfbf;
+    position: fixed;
+    right: 20%;
+    top: 20%;
+}

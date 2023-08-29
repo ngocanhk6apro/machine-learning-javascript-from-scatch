@@ -6,52 +6,13 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Train data viewer</title>
-    <style>
-        body {
-            font-family: Arial, serif;
-            background-color: skyblue;
-            overscroll-behavior: none;
-        }
-
-        table {
-            width: calc(100% - 500px);
-        }
-
-        table > tbody >tr> td>div>img {
-            object-fit: contain;
-            width: 5vw;
-            height: auto;
-        }
-
-        table > tbody >tr> td:nth-child(1) {
-            text-align: center;
-            text-transform: uppercase;
-            font-weight: bold;
-        }
-
-        table, td, th {
-            border-collapse: collapse;
-            border: 1px solid #bfbfbf;
-            background-color:#fdfdfd;
-        }
-
-        table > thead > tr {
-            border-bottom: 1px solid #bfbfbf;
-        }
-
-        #chartContainer {
-            position: fixed;
-            top: 50%;
-            right: 0;
-            transform: translate(0, -50%);
-        }
-
-        .emphasize {
-            background-color: coral;
-        }
-    </style>
+    <link rel="stylesheet" href="css/viewer.css">
 </head>
 <body>
+    <div id ="controlPanel">
+        <button id="btnToggleInput">Toggle Input</button>
+    </div>
+    <div id="inputContainer"></div>
     <div id="chartContainer"></div>
     <div class="sampleContainer">
         <table>
@@ -76,6 +37,7 @@
     <script src="js/graphics.js"></script>
     <script src="js/math.js"></script>
     <script src="js/chart.js"></script>
+    <script src="js/sketchpad.js"></script>
 
     <!---Logic to fetch sample data image and display on the UI--->
     <script>
@@ -128,6 +90,14 @@
             const chartContainer = document.getElementById("chartContainer");
             const chart = new Chart(chartContainer, samples, chartOptions, onChartIconSelected);
 
+            // Init for the input container
+            const inputContainer = document.getElementById("inputContainer");
+            const sketchPath = new SketchPad(inputContainer);
+
+            // Init for toggle input button
+            const toggleInputButton = document.getElementById("btnToggleInput");
+            toggleInputButton.addEventListener("click", toggleInput);
+
             function onChartIconSelected(sample, doScroll = true) {
                 if (!Boolean(sample)) {
                     [...document.querySelectorAll(".emphasize")].forEach(it => it.classList.remove("emphasize"));
@@ -149,6 +119,14 @@
                     sample.point = findSample.point;
                 }
                 chart.selectSample(sample);
+            }
+
+            function toggleInput() {
+                if (inputContainer.style.visibility === "hidden") {
+                    inputContainer.style.visibility = "visible";
+                } else {
+                    inputContainer.style.visibility = "hidden";
+                }
             }
         })();
     </script>
