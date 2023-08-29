@@ -51,9 +51,33 @@ function drawImage(paths = []) {
     for(let idx = 0; idx < paths.length; idx++) {
         drawPath(paths[idx])
     }
+
+    drawBoundingBox(paths);
     const buffer = canvas.toBuffer("image/png");
     clearCanvas();
     return buffer;
+}
+
+function drawBoundingBox(paths) {
+    const rect = getBoundingBox(paths);
+    ctx.strokeStyle="black";
+    ctx.lineWidth = 2;
+    ctx.rect(rect.x, rect.y, rect.width, rect.height);
+    ctx.stroke();
+}
+
+function getBoundingBox(paths) {
+    const points = paths.flatMap(path => [...path]);
+    const minX = Math.min(...points.map(p => p[0]));
+    const minY = Math.min(...points.map(p => p[1]));
+    const maxX = Math.max(...points.map(p => p[0]));
+    const maxY = Math.max(...points.map(p => p[1]));
+    return {
+        x: minX,
+        y: minY,
+        width: maxX - minX,
+        height: maxY - minY,
+    };
 }
 
 function clearCanvas() {
@@ -96,9 +120,9 @@ function generateImageFiles() {
         });
     progressBar.stop();
 }
-//generateImageFiles();
+generateImageFiles();
 
-function extractFeatures() {
+function extractPathCountAndPointCountFeatures() {
     console.log("START EXTRACT FEATURES...");
     let id = 1;
     const styles = {
@@ -156,4 +180,4 @@ function extractFeatures() {
     }, null, 3));
     console.log("FINISHED!!")
 }
-extractFeatures();
+//extractPathCountAndPointCountFeatures();

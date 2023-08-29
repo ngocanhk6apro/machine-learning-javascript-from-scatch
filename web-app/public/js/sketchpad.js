@@ -3,7 +3,7 @@ class SketchPad {
     #canvas;
     #paths = [];
     #isDrawing = false;
-    #drawFinishedListeners = [];
+    #btnUndo;
 
     constructor(container, size=400) {
         const canvas = document.createElement("canvas");
@@ -15,14 +15,21 @@ class SketchPad {
         this.#addEventListeners(canvas);
         this.#ctx = canvas.getContext("2d");
         this.#canvas = canvas;
-    }
 
-    addDrawFinishListener(listener) {
-        if (typeof listener === "function") {
-            this.#drawFinishedListeners.push(listener);
-        } else {
-            console.log("Wrong value for listener.")
-        }
+        const undoButtonPanel = document.createElement("div");
+        undoButtonPanel.classList.add("btn-group");
+        container.append(undoButtonPanel);
+
+        this.#btnUndo = Object.assign(document.createElement("button"), {
+            id:"btnUndo" ,
+            textContent: "Undo",
+            disabled: "disabled"
+        });
+        this.#btnUndo.addEventListener("click", () => {
+            this.#paths.pop();
+            this.#redraw();
+        });
+        undoButtonPanel.append(this.#btnUndo);
     }
 
     get hasPaths() {
@@ -54,11 +61,6 @@ class SketchPad {
         canvas.ontouchend = () => this.#isDrawing = false;
     }
 
-    undo() {
-        this.#paths.pop();
-        this.#redraw();
-    }
-
     #redraw() {
         this.#ctx.clearRect(0, 0, this.#canvas.width, this.#canvas.height);
         this.#draw()
@@ -78,8 +80,10 @@ class SketchPad {
             this.#drawPath(this.#paths[idx])
         }
 
-        for(let listener of this.#drawFinishedListeners) {
-            listener(this.#paths.length > 0)
+        if (this.#paths.length > 0) {
+            this.#btnUndo.removeAttribute("disabled");
+        } else {
+            this.#btnUndo.setAttribute("disabled", "disabled");
         }
     }
 
