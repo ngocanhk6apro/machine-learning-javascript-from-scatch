@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const cliProgress = require('cli-progress');
-const PathUtils = require("../common-utils/paths");
+const PathUtils = require("../common-utils/path-utils");
 const {rawDataPath, dataPath, jsonDataSetPath, imageDataSetPath, dataSetPath} = require("./constants");
 const {showProgress} = require("./progress-reporter");
 
