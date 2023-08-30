@@ -150,15 +150,19 @@
                     PathUtils.getWidth(paths),
                     PathUtils.getHeight(paths)
                 ];
-                const label = classifyPoint(point);
-                predictLabel.textContent = `Is that a ${label} ?`;
-                chart.showDynamicPoint(point);
+
+                const nearestSample = findNearestSample(point);
+                predictLabel.textContent = `Is that a ${nearestSample.label} ?`;
+                chart.showDynamicPoint({
+                    point,
+                    nearestSample
+                });
             }
 
-            function classifyPoint(point) {
+            function findNearestSample(point) {
                 const samplePoints = samples.map(it => it.point);
                 const nearestIndex = GraphUtils.getNearestPointIndex(point, samplePoints);
-                return samples[nearestIndex].label;
+                return samples[nearestIndex];
             }
         })();
     </script>

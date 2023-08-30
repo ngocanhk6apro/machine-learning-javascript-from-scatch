@@ -41,8 +41,8 @@ class Chart{
       this.#addEventListeners();
    }
 
-   showDynamicPoint(point) {
-      this.dynamicPoint = point;
+   showDynamicPoint(pointInformation) {
+      this.dynamicPoint = pointInformation;
       this.#draw();
    }
 
@@ -242,9 +242,22 @@ class Chart{
 
       // Additional logic to draw dynamic point
       if (this.dynamicPoint) {
-         const pixelLoc = math.remapPoint(this.dataBounds, this.pixelBounds, this.dynamicPoint);
+
+         const {point, nearestSample} = this.dynamicPoint;
+         const pixelLoc = math.remapPoint(this.dataBounds, this.pixelBounds, point);
          graphics.drawPoint(ctx, pixelLoc, "rgba(255, 255, 255, 0.7)", 10_000_000);
-         graphics.drawPoint(ctx, pixelLoc, "black");
+
+         // Draw line from target predict point to nearestSample
+         ctx.beginPath();
+         ctx.moveTo(...pixelLoc);
+         ctx.lineTo(...math.remapPoint(
+             this.dataBounds,
+             this.pixelBounds,
+             nearestSample.point
+         ));
+         ctx.stroke();
+
+         graphics.drawImage(ctx, this.styles[nearestSample.label].image,pixelLoc)
       }
 
       this.#drawAxes();
